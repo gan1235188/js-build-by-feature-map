@@ -1,0 +1,15 @@
+{
+    "restartable": "rs",
+    "ignore": [
+      "dist",
+      "node_modules"
+    ],
+    "watch": [
+      "*.ts"
+    ],
+    "exec": "tsc && node ./index.js",
+    "ext": "ts, tsx, js",
+    "includes": [
+      "*.ts"
+    ]
+  }
