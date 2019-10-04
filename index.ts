@@ -1,5 +1,4 @@
 import * as webpack from 'webpack'
-import * as path from 'path'
 import transformConfig, { featureTransformType } from './transformConfig'
 
 let featureConfig: featureTransformType = {}
@@ -15,15 +14,23 @@ export async function build(featureMap: dynamicProperty, specialWebpackConfig: a
   webpackConfig = setWebpackConfigTransformPlugin(pluginConfig, webpackConfig)
 
   return new Promise((resolve, reject) => {
-    console.log(webpackConfig)
-    webpack(webpackConfig, (err, stats) => {
+    const result = webpack(webpackConfig, (err, stats) => {
       if (err) {
         reject(err)
         console.error(err)
         return
       }
 
-      resolve()
+      const info = stats.toJson();
+      if (stats.hasErrors()) {
+        throw new Error(info.errors[0])
+      } else {
+        resolve()
+      }
+
+      if (stats.hasWarnings()) {
+        console.warn(info.warnings);
+      }
     })
   })
 }
@@ -61,7 +68,7 @@ function setWebpackConfigTransformPlugin (
       {
         loader: 'js-build-by-feature-map-loader',
         options: {
-          specialTransformConfig,
+          transformConfig: specialTransformConfig,
           envName: 'development',
         }
       }

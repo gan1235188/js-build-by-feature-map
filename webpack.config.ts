@@ -12,6 +12,10 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js']
   },
+  node: {
+    __dirname: false,
+    fs: false
+  },
   target: 'node',
   externals: [webpackNodeExternals()],
   module: {
