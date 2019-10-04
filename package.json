@@ -5,7 +5,8 @@
   "main": "dist/build.js",
   "scripts": {
     "start": "nodemon tsc && node index.js",
-    "build": "webpack --config webpack.config.ts"
+    "build": "webpack --config webpack.config.ts",
+    "test": "webpack --config webpack.config.ts && node ./dist/test.js"
   },
   "author": "",
   "license": "ISC",
@@ -74,6 +75,7 @@
     "@babel/plugin-transform-typeof-symbol": "^7.2.0",
     "@babel/plugin-transform-unicode-regex": "^7.6.2",
     "@types/webpack": "^4.39.2",
+    "nodemon": "^1.19.3",
     "ts-loader": "^6.2.0",
     "typescript": "^3.6.3",
     "webpack-cli": "^3.3.9",

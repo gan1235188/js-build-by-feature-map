@@ -52,7 +52,7 @@ export default {
     // 转化块级空间函数定义
     blockScopedFunctions: '@babel/plugin-transform-block-scoped-functions',
 
-    // 转化块级变量声明
+    // 转化块级变量声明，同时会转化const 和let声明
     blockScoping: '@babel/plugin-transform-block-scoping',
 
     // 转换class属性，类属性插件必须要在类插件之前
@@ -151,7 +151,7 @@ export default {
     reservedWord: '@babel/plugin-transform-reserved-words', //es3
 
     // const x = { test } 转为 const x = { test: test }
-    shorthandProperties: '@babel/plugin-transform-shorthand-properties',
+    // shorthandProperties: '@babel/plugin-transform-shorthand-properties',
 
     // /s/y => new RegExp('s', 'y')。 疑问：浏览器不支持y模式还管用吗?
     stickyRegex: '@babel/plugin-transform-sticky-regex',

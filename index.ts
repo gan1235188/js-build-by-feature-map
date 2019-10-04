@@ -14,23 +14,25 @@ export async function build(featureMap: dynamicProperty, specialWebpackConfig: a
   webpackConfig = setWebpackConfigTransformPlugin(pluginConfig, webpackConfig)
 
   return new Promise((resolve, reject) => {
-    const result = webpack(webpackConfig, (err, stats) => {
+    const compiler = webpack(webpackConfig, (err, stats) => {
       if (err) {
         reject(err)
         console.error(err)
         return
       }
-
+      
       const info = stats.toJson();
       if (stats.hasErrors()) {
         throw new Error(info.errors[0])
-      } else {
-        resolve()
       }
 
       if (stats.hasWarnings()) {
         console.warn(info.warnings);
       }
+    }) as any
+
+    compiler.hooks.done.tap('done', () => {
+      resolve()
     })
   })
 }
