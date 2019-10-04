@@ -5,7 +5,7 @@
   "main": "dist/build.js",
   "scripts": {
     "start": "nodemon tsc && node index.js",
-    "build": "webpack --config config/webpack.config.ts"
+    "build": "webpack --config webpack.config.ts"
   },
   "author": "",
   "license": "ISC",

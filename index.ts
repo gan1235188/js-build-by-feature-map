@@ -15,6 +15,7 @@ export async function build(featureMap: dynamicProperty, specialWebpackConfig: a
   webpackConfig = setWebpackConfigTransformPlugin(pluginConfig, webpackConfig)
 
   return new Promise((resolve, reject) => {
+    console.log(webpackConfig)
     webpack(webpackConfig, (err, stats) => {
       if (err) {
         reject(err)
@@ -58,7 +59,7 @@ function setWebpackConfigTransformPlugin (
     test: /\.js$/,
     use: [
       {
-        loader: path.resolve('./webpack-loader/webpack-js-build-online-loader.js'),
+        loader: 'js-build-by-feature-map-loader',
         options: {
           specialTransformConfig,
           envName: 'development',
