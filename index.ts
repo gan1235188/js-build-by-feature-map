@@ -15,7 +15,6 @@ export async function build(featureMap: dynamicProperty, specialWebpackConfig: a
   webpackConfig = setWebpackConfigTransformPlugin(pluginConfig, webpackConfig)
 
   return new Promise((resolve, reject) => {
-    //TODO: 有问题，module的rule会被覆盖
     webpack(webpackConfig, (err, stats) => {
       if (err) {
         reject(err)
