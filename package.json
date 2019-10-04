@@ -1,5 +1,5 @@
 {
-  "name": "js-build-runtime",
+  "name": "js-build-by-feature-map",
   "version": "0.0.1",
   "description": "",
   "main": "dist/build.js",
