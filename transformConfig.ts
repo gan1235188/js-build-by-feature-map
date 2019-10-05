@@ -47,7 +47,7 @@ export default {
     asyncToGenerator: '@babel/plugin-transform-async-to-generator',
 
     // 转化箭头函数：()=>{} === function(){}
-    // arrowFunctions: '@babel/plugin-transform-arrow-functions',
+    arrowFunctions: '@babel/plugin-transform-arrow-functions',
 
     // 转化块级空间函数定义
     blockScopedFunctions: '@babel/plugin-transform-block-scoped-functions',

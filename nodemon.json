@@ -7,7 +7,7 @@
     "watch": [
       "*.ts"
     ],
-    "exec": "tsc && node ./index.js",
+    "exec": "npm run build && node ./index.js",
     "ext": "ts, tsx, js",
     "includes": [
       "*.ts"
