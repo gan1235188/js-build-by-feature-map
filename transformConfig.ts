@@ -11,7 +11,7 @@ export default {
     dynamicImport: '@babel/plugin-proposal-dynamic-import',
 
     //转换await, yield
-    regenrator: '@babel/plugin-transform-regenerator',
+    regenerator: '@babel/plugin-transform-regenerator',
 
     //转化: ::obj.test, ::obj.test(1), obj::test, obj::test(1)
     functionBind: '@babel/plugin-proposal-function-bind',
