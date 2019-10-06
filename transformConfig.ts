@@ -27,7 +27,7 @@ export default {
     destructuring: '@babel/plugin-transform-destructuring',
 
     // (不在需要)插件：'@babel/plugin-transform-destructuring'的局部功能(object部分)
-    objectRestSpread: '@babel/plugin-proposal-object-rest-spread',
+    // objectRestSpread: '@babel/plugin-proposal-object-rest-spread',
 
     //转化：try...catch时，catch的括号(以及参数)可以省略
     optionalCatchBinding: '@babel/plugin-proposal-optional-catch-binding',
@@ -82,8 +82,8 @@ export default {
     //依赖于各种转化插件，如箭头函数，class等等
     functionName: '@babel/plugin-transform-function-name',
 
-    //使得instanceof操作符兼容System
-    instanceof: '@babel/plugin-transform-instanceof',
+    //使得instanceof操作符兼容Symbol.hasInstance
+    'instanceof': '@babel/plugin-transform-instanceof',
 
     //let a = 0o07 === a = 7 以及类似的东西
     //https://www.babeljs.cn/docs/babel-plugin-transform-literals
@@ -134,10 +134,10 @@ export default {
     namedCapturingGroupsRegex: '@babel/plugin-transform-named-capturing-groups-regex',
 
     // 将function里面的new.target转化为：this.constructor(支持new.target语法)))
-    newRarget: '@babel/plugin-transform-new-target',
+    newTarget: '@babel/plugin-transform-new-target',
 
     // 转化super()：参考https://www.babeljs.cn/docs/babel-plugin-transform-object-super
-    ObjectSuper: '@babel/plugin-transform-object-super',
+    objectSuper: '@babel/plugin-transform-object-super',
 
     /**
      * 转化函数参数，包括：
@@ -174,14 +174,14 @@ export default {
      * 在当前模块导入xxx模块中x
      * 并从当前模块导出x
      */
-    exportDefaultFrom: '@babel/plugin-proposal-export-default-from',
+    // exportDefaultFrom: '@babel/plugin-proposal-export-default-from',
 
     /**
      * 支持语法：export * as n from 'xxx'
      * 在当前模块导入xxx模块中x 并重命名为n
      * 并从当前模块导出n
      */
-    exportNamespaceFrom: '@babel/plugin-proposal-export-namespace-from',
+    // exportNamespaceFrom: '@babel/plugin-proposal-export-namespace-from',
 
     /**
      * 转化短路赋值：
@@ -192,7 +192,7 @@ export default {
 
     /**
      * 转化可选择的属性读取：
-     *  //如果obj存在，同时，obj.test存在，读取obj.test.name的志
+     *  //如果obj存在，同时，obj.test存在，读取obj.test.name的值
      *  obj?.test?.name //b不会抛错
      */
     optionalChaining: '@babel/plugin-proposal-optional-chaining',
