@@ -1,13 +1,10 @@
 import * as webpack from 'webpack'
-import transformConfig, { featureTransformType } from './transformConfig'
+import transformConfig from './transformConfig'
+import { featureMap, featureTransformType } from './types'
 
 let featureConfig: featureTransformType = {}
 
-interface dynamicProperty {
-  [key: string]: boolean
-}
-
-export async function build(featureMap: dynamicProperty, specialWebpackConfig: any = {}) {
+export async function build(featureMap: featureMap, specialWebpackConfig: any = {}) {
   const pluginConfig = createSpecialPluginConfigByFeatureMap(featureMap, featureConfig)
   let webpackConfig = getWebpackConfig(specialWebpackConfig)
 
@@ -42,7 +39,7 @@ export function setTransformPlugin(_specialTransformConfig: featureTransformType
 }
 
 function createSpecialPluginConfigByFeatureMap(
-  featureMap: dynamicProperty,
+  featureMap: featureMap,
   specialTransformConfig: featureTransformType)
 {
   const result: featureTransformType = {}
@@ -52,7 +49,7 @@ function createSpecialPluginConfigByFeatureMap(
   }
 
   Object.keys(_transformConfig).forEach(key => {
-    if(!featureMap[key]) {
+    if((featureMap as any)[key]) {
       result[key] = _transformConfig[key]
     }
   })

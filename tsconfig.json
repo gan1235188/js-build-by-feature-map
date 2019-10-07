@@ -4,6 +4,6 @@
     "experimentalDecorators": true,
     "sourceMap": false,
     "noImplicitAny": true,
-    "target": "es5"
+    "target": "es2015"
   }
 }
