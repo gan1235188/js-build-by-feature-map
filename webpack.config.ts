@@ -2,7 +2,7 @@ var webpackNodeExternals = require('webpack-node-externals')
 
 module.exports = {
   entry: './index.ts',
-  mode: 'development',
+  mode: 'production',
   output: {
     libraryTarget: 'umd',
     path: __dirname,
