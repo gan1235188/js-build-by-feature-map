@@ -2,6 +2,8 @@ import * as webpack from 'webpack'
 import transformConfig from './transformConfig'
 import { featureMap, featureTransformType } from './types'
 
+export * from './types'
+
 let featureConfig: featureTransformType = {}
 
 export async function build(featureMap: featureMap, specialWebpackConfig: any = {}) {
