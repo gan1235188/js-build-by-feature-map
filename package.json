@@ -1,6 +1,6 @@
 {
   "name": "js-build-by-feature-map",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "dist/build.js",
   "scripts": {

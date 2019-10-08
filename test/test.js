@@ -1,4 +1,4 @@
-var build = require('js-build-by-feature-map')
+var build = require('../dist/build')
 var path = require('path')
 
 build.build({}, {
@@ -6,5 +6,12 @@ build.build({}, {
   output: {
     path: path.resolve(__dirname, '../dist/'),
     filename: 'result.js'
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js/
+      }
+    ]
   }
 })

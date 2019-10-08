@@ -51,7 +51,7 @@ function createSpecialPluginConfigByFeatureMap(
   }
 
   Object.keys(_transformConfig).forEach(key => {
-    if((featureMap as any)[key]) {
+    if(!(featureMap as any)[key]) {
       result[key] = _transformConfig[key]
     }
   })
@@ -63,23 +63,89 @@ function setWebpackConfigTransformPlugin (
   specialTransformConfig: featureTransformType,
   webpackConfig: webpack.Configuration
 ) {
-  const transformPlugin = {
+  const transformLoader = {
     test: /\.js$/,
     use: [
       {
         loader: 'js-build-by-feature-map-loader',
         options: {
           transformConfig: specialTransformConfig,
-          envName: 'development',
+          envName: webpackConfig.mode,
         }
       }
     ]
   }
   webpackConfig.module = webpackConfig.module || {} as any
   webpackConfig.module.rules = webpackConfig.module.rules  || []
-  webpackConfig.module.rules.unshift(transformPlugin)
-
+  findJsLoaderAndReplacePlugin(webpackConfig.module.rules, transformLoader)
   return webpackConfig
+}
+
+function findJsLoaderAndReplacePlugin(rules: webpack.RuleSetRule[], transformLoader: webpack.RuleSetRule) {
+  rules.forEach(item => {
+    if(isJsLoader(item)) {
+      item.use = transformLoader.use
+    }
+
+    if(item.rules) findJsLoaderAndReplacePlugin(item.rules, transformLoader)
+  })
+}
+
+function isJsLoader(rule: webpack.RuleSetRule): boolean {
+  const testFilePath = 'a.js'
+  const testType = getType(rule.test)
+  if(testType === 'String') {
+    return /\.js\b/.test(rule.test as string)
+  }
+
+  if(testType === 'RegExp') {
+    return (rule.test as RegExp).test(testFilePath)
+  }
+
+  if(testType === 'Function') {
+    return (rule.test as Function)(testFilePath)
+  }
+
+  if(testType === 'Array') {
+    return (rule.test as Array<webpack.RuleSetRule>).every(isJsLoader)
+  }
+
+  if(testType === 'Object') {
+    const testField = rule.test as any
+    let result = false
+    
+    if(testField.and && getType(testField.and) === 'Array') {
+      result = isJsLoader(testField.and)
+    }
+
+    if(testField.exclude) {
+      result = result && !isJsLoader(testField.exclude)
+    }
+
+    if(testField.include) {
+      result = result || isJsLoader(testField.include)
+    }
+
+    if(testField.not) {
+      result = result && !isJsLoader(testField.not)
+    }
+
+    if(testField.or) {
+      result = result || isJsLoader(testField.or)
+    }
+
+    if(testField.test) {
+      result = result || isJsLoader(testField.test)
+    }
+
+    return result
+  }
+
+  return false
+}
+
+function getType(test: any) {
+  return Object.prototype.toString.apply(test).slice(8, -1)
 }
 
 
