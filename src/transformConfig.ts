@@ -167,7 +167,7 @@ export default {
      */
     pipelineOperator: ['@babel/plugin-proposal-pipeline-operator', { 'proposal': 'minimal' }],
     // 转化操作符??: var result = a ?? b     判定a是否为null或者undefined
-    nullishCoalescingOperator: ['@babel/plugin-proposal-nullish-coalescing-operator', { 'loose': false }],
+    nullishCoalescingOperator: ['@babel/plugin-proposal-nullish-coalescing-operator', { 'loose': true }],
     // (没看出什么优势))转化do表达式: https://www.babeljs.cn/docs/babel-plugin-proposal-do-expressions
     doExpressions: '@babel/plugin-proposal-do-expressions',
     /**
@@ -205,7 +205,7 @@ export default {
     // 参考：https://www.babeljs.cn/docs/babel-plugin-proposal-partial-application
     partialApplication: '@babel/plugin-proposal-partial-application',
     // (注意是使用WeakMap实现，存在兼容问题)类的私有属性、方法和getter、setter
-    privateMethods: '@babel/plugin-proposal-private-methods',
+    privateMethods: ['@babel/plugin-proposal-private-methods', { loose: true }],
     // 支持装饰器：此插件的配置legacy必须与privateMthods和class-properties的loose一致
     decorators: ['@babel/plugin-proposal-decorators', { decoratorsBeforeExport: true }]
 } as featureTransformType

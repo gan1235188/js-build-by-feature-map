@@ -19,6 +19,11 @@ export async function build(featureMap: featureMap, specialWebpackConfig: any = 
         console.error(err)
         return
       }
+
+      console.log(stats.toString({
+        chunks: false,  // 使构建过程更静默无输出
+        colors: true    // 在控制台展示颜色
+      }));
       
       const info = stats.toJson();
       if (stats.hasErrors()) {
@@ -51,7 +56,8 @@ function createSpecialPluginConfigByFeatureMap(
   }
 
   Object.keys(_transformConfig).forEach(key => {
-    if(!(featureMap as any)[key]) {
+    const map = featureMap || {}
+    if(!(map as any)[key]) {
       result[key] = _transformConfig[key]
     }
   })
