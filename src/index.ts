@@ -1,43 +1,37 @@
 import * as webpack from 'webpack'
 import transformConfig from './transformConfig'
-import { featureMap, featureTransformType } from './types'
+import { 
+  featureMap,
+  featureTransformType,
+  featureMapBuilders,
+  featureMapBuilder,
+  builderConfig
+} from './types'
+import * as path from 'path'
 
 export * from './types'
 
+const md5 = require('md5')
 let featureConfig: featureTransformType = {}
+const featureMapBuilders: featureMapBuilders = {}
 
-export async function build(featureMap: featureMap, specialWebpackConfig: any = {}) {
+export async function build(
+  featureMap: featureMap= {},
+  specialWebpackConfig: any = {},
+  builderConfig: builderConfig = getDefaultBuilderConfig())
+{
+  const builderStatus = getBuilderStatus(featureMap, builderConfig, specialWebpackConfig)
   const pluginConfig = createSpecialPluginConfigByFeatureMap(featureMap, featureConfig)
-  let webpackConfig = getWebpackConfig(specialWebpackConfig)
-
-  webpackConfig = setWebpackConfigTransformPlugin(pluginConfig, webpackConfig)
+  const _webpackConfig = getWebpackConfig(specialWebpackConfig, builderStatus)
+  const webpackConfig = setWebpackConfigTransformPlugin(pluginConfig, _webpackConfig)
 
   return new Promise((resolve, reject) => {
-    const compiler = webpack(webpackConfig, (err, stats) => {
-      if (err) {
-        reject(err)
-        console.error(err)
-        return
-      }
+    if(builderStatus.isBuilding) {
+      return resolve(builderStatus)
+    }
 
-      console.log(stats.toString({
-        chunks: false,  // 使构建过程更静默无输出
-        colors: true    // 在控制台展示颜色
-      }));
-      
-      const info = stats.toJson();
-      if (stats.hasErrors()) {
-        throw new Error(info.errors[0])
-      }
-
-      if (stats.hasWarnings()) {
-        console.warn(info.warnings);
-      }
-    }) as any
-
-    compiler.hooks.done.tap('done', () => {
-      resolve()
-    })
+    builderStatus.isBuilding = builderStatus.isWatchMode
+    runWebpack(webpackConfig, resolve, reject, builderStatus)
   })
 }
 
@@ -45,19 +39,105 @@ export function setTransformPlugin(_specialTransformConfig: featureTransformType
   featureConfig = _specialTransformConfig
 }
 
+function getFeatureMapMD5Key(featureMap: featureMap) {
+  try {
+    return md5(JSON.stringify(featureMap || {}))
+  }catch(e) {
+    console.error(e)
+  }
+}
+
+function getDefaultBuilderConfig(): builderConfig {
+  return {
+    isDifferentFile: false
+  }
+}
+
+function getBuilderDefaultStatus(featureMapMD5Key: string = '') {
+  const status: featureMapBuilder = {
+    isBuilding: false,
+    isFull: true,
+    isWatchMode: false,
+    config: getDefaultBuilderConfig()
+  }
+  if(featureMapMD5Key && featureMapMD5Key !== 'undefined') {
+    status.featureMapMD5Key = featureMapMD5Key
+  }
+
+  return status
+}
+
+function getBuilderStatus(
+  featureMap: featureMap,
+  builderConfig: builderConfig,
+  webpackConfig: webpack.Configuration
+): featureMapBuilder {
+  if(featureMap) {
+    const featureMapMD5Key = getFeatureMapMD5Key(featureMap)
+    if(featureMapBuilders[featureMapMD5Key]) return featureMapBuilders[featureMapMD5Key]
+
+    return featureMapBuilders[featureMapMD5Key]= {
+      ...getBuilderDefaultStatus(),
+      featureMapMD5Key,
+      isFull: isFull(featureMap),
+      isWatchMode: webpackConfig.watch,
+      config: {
+        ...getDefaultBuilderConfig(),
+        ...builderConfig
+      }
+    }
+  }
+
+  return getBuilderDefaultStatus()
+}
+
+function isFull(featureMap: featureMap) {
+  if(!featureMap) return true
+  return Object.keys(featureMap).every(key => (featureMap as any)[key])
+}
+
+function runWebpack(
+  webpackConfig: webpack.Configuration,
+  resolve: Function,
+  reject: Function,
+  builderStatus: featureMapBuilder)
+{
+  const compiler = webpack(webpackConfig, (err, stats) => {
+    stats && stats.toString && console.log(stats.toString({
+      chunks: false,  // 使构建过程更静默无输出
+      colors: true    // 在控制台展示颜色
+    }));
+
+    let info = {} as webpack.Stats.ToJsonOutput
+    if(stats && stats.toJson) {
+      info = stats.toJson();
+      if (stats.hasWarnings()) {
+        console.warn(info.warnings);
+      }
+    }
+
+    if (err || stats.hasErrors()) {
+      return reject(err || info.errors)
+    }
+
+    resolve(builderStatus)
+  }) as webpack.Compiler
+
+  compiler.hooks && compiler.hooks.done.tap('done', () => {
+    resolve(builderStatus)
+  })
+}
+
 function createSpecialPluginConfigByFeatureMap(
   featureMap: featureMap,
   specialTransformConfig: featureTransformType)
 {
   const result: featureTransformType = {}
-  const _transformConfig = {
-    ...transformConfig,
-    ...specialTransformConfig
-  }
+  const _transformConfig = deepMerge<featureTransformType>(transformConfig, specialTransformConfig)
 
   Object.keys(_transformConfig).forEach(key => {
-    const map = featureMap || {}
-    if(!(map as any)[key]) {
+    const map = (featureMap || {}) as any
+    if(!map[key]) {
       result[key] = _transformConfig[key]
     }
   })
@@ -65,10 +145,28 @@ function createSpecialPluginConfigByFeatureMap(
   return result
 }
 
+function deepMerge<T>(...objs: T[]): T {
+  let result = {} as T
+  try {
+
+    objs.map(item => {
+      result = {
+        ...result,
+        ...JSON.parse(JSON.stringify(item))
+      }
+    })
+
+    return result
+  }catch(e) {
+    console.error(e)
+  }
+}
+
 function setWebpackConfigTransformPlugin (
   specialTransformConfig: featureTransformType,
   webpackConfig: webpack.Configuration
 ) {
+  // TODO: 如果js的loader使用了除了babel以外的loader会导致问题
   const transformLoader = {
     test: /\.js$/,
     use: [
@@ -155,7 +253,14 @@ function getType(test: any) {
 }
 
 
-function getWebpackConfig(specialWebpackConfig: webpack.Configuration) {
+function getWebpackConfig(
+  specialWebpackConfig: webpack.Configuration = {},
+  builderStatus: featureMapBuilder)
+{
+  if(builderStatus.isFull) {
+    return specialWebpackConfig
+  }
+
   const defaultConfig: any = {
     entry: './test-code/index.js',
     mode: 'development',
@@ -169,8 +274,31 @@ function getWebpackConfig(specialWebpackConfig: webpack.Configuration) {
     }
   }
 
-  return {
+  const webpackConfig = {
     ...defaultConfig,
     ...specialWebpackConfig
   }
+
+  setWebpackOutput(webpackConfig, builderStatus)
+
+  return webpackConfig
+}
+
+function setWebpackOutput(
+  webpackConfig: webpack.Configuration,
+  builderStatus: featureMapBuilder)
+{
+  if(!builderStatus.featureMapMD5Key || !webpackConfig.output) return
+
+  const output = webpackConfig.output
+  if(output.path && builderStatus.config.isDifferentFile) {
+    webpackConfig.output.path = path.resolve(output.path + `/featureMD5Key_${builderStatus.featureMapMD5Key}`)
+    builderStatus.outputPath = webpackConfig.output.path
+  }
+
+  //先注释
+  // if(output.filename && !builderStatus.config.isDifferentFile) {
+  //   let filename = webpackConfig.output.filename
+  //   filename = filename.replace('.js', builderStatus.featureMapMD5Key +'.js')
+  // }
 }

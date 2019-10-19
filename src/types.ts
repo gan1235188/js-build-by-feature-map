@@ -1,7 +1,25 @@
 type babelTransformPlugin = any
 
+export interface builderConfig {
+  isDifferentFile: boolean //是否将不同特性的代码存放到不同的文件夹
+  
+}
+
 export interface featureTransformType {
     [featureName: string]: babelTransformPlugin
+}
+
+export interface featureMapBuilder {
+  isBuilding: boolean
+  featureMapMD5Key?: string
+  isFull: boolean
+  outputPath?: string
+  isWatchMode: boolean
+  config: builderConfig
+}
+
+export interface featureMapBuilders {
+  [key: string]: featureMapBuilder
 }
 
 export interface featureMap {

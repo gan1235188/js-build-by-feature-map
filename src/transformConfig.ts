@@ -19,7 +19,7 @@ export default {
     // (不在需要)插件：'@babel/plugin-transform-destructuring'的局部功能(object部分)
     // objectRestSpread: '@babel/plugin-proposal-object-rest-spread',
     //转化：try...catch时，catch的括号(以及参数)可以省略
-    optionalCatchBinding: '@babel/plugin-proposal-optional-catch-binding',
+    // optionalCatchBinding: '@babel/plugin-proposal-optional-catch-binding',
     /**
      * 正则表达式跟unicode相关的修正
      * 以下是部分功能：
@@ -31,7 +31,7 @@ export default {
      */
     unicodePropertyRegex: '@babel/plugin-proposal-unicode-property-regex',
     // 单独转化async和await，如果有yied和*，则不转化
-    asyncToGenerator: '@babel/plugin-transform-async-to-generator',
+    // asyncToGenerator: '@babel/plugin-transform-async-to-generator',
     // 转化箭头函数：()=>{} === function(){}
     arrowFunctions: '@babel/plugin-transform-arrow-functions',
     // 转化块级空间函数定义

@@ -12,10 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "@babel/core": "^7.6.2",
-    "loader-utils": "^1.2.3",
-    "schema-utils": "^2.3.0",
-    "webpack": "^4.41.0",
-    "js-build-by-feature-map-loader": "0.0.1",
     "@babel/plugin-proposal-async-generator-functions": "^7.2.0",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-proposal-decorators": "^7.6.0",
@@ -68,7 +64,12 @@
     "@babel/plugin-transform-sticky-regex": "^7.2.0",
     "@babel/plugin-transform-template-literals": "^7.4.4",
     "@babel/plugin-transform-typeof-symbol": "^7.2.0",
-    "@babel/plugin-transform-unicode-regex": "^7.6.2"
+    "@babel/plugin-transform-unicode-regex": "^7.6.2",
+    "js-build-by-feature-map-loader": "0.0.1",
+    "loader-utils": "^1.2.3",
+    "md5": "^2.2.1",
+    "schema-utils": "^2.3.0",
+    "webpack": "^4.41.0"
   },
   "devDependencies": {
     "@types/babel__core": "^7.1.3",
