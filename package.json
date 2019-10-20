@@ -1,8 +1,9 @@
 {
   "name": "js-build-by-feature-map",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
   "main": "dist/build.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "start": "nodemon tsc && node index.js",
     "build": "webpack --config webpack.config.ts",

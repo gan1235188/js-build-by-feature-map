@@ -16,10 +16,10 @@ export default {
      *  let [a, b, ...c] = [1, 2, 3, 4] === a = 1, b = 2, c = [3,4]
      */
     destructuring: '@babel/plugin-transform-destructuring',
-    // (不在需要)插件：'@babel/plugin-transform-destructuring'的局部功能(object部分)
-    // objectRestSpread: '@babel/plugin-proposal-object-rest-spread',
+    // 插件：'@babel/plugin-transform-destructuring'的局部功能(object部分)
+    objectRestSpread: '@babel/plugin-proposal-object-rest-spread',
     //转化：try...catch时，catch的括号(以及参数)可以省略
-    // optionalCatchBinding: '@babel/plugin-proposal-optional-catch-binding',
+    optionalCatchBinding: '@babel/plugin-proposal-optional-catch-binding',
     /**
      * 正则表达式跟unicode相关的修正
      * 以下是部分功能：
@@ -113,7 +113,7 @@ export default {
     // 转化保留字变量：var abstract = 1; 转为 var _abstract = 1
     reservedWord: '@babel/plugin-transform-reserved-words', //es3
     // const x = { test } 转为 const x = { test: test }
-    // shorthandProperties: '@babel/plugin-transform-shorthand-properties',
+    shorthandProperties: '@babel/plugin-transform-shorthand-properties',
     // /s/y => new RegExp('s', 'y')。 疑问：浏览器不支持y模式还管用吗?
     stickyRegex: '@babel/plugin-transform-sticky-regex',
     // 转化模版文字：`dafa${123}` === 'dafa'.concat(123)

@@ -7,6 +7,8 @@ build.build({}, {
     path: path.resolve(__dirname, '../dist/'),
     filename: 'result.js'
   },
+  devtool: 'none',
+  mode: "development",
   module: {
     rules: [
       {

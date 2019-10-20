@@ -2,8 +2,11 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "declaration": true,
+    "outDir": "dist",
     "sourceMap": false,
     "noImplicitAny": true,
     "target": "es2015"
-  }
+  },
+  "include": ["./src"]
 }
