@@ -16,6 +16,7 @@ export interface featureMapBuilder {
   outputPath?: string
   isWatchMode: boolean
   config: builderConfig
+  buildPromise?: Promise<featureMapBuilder>
 }
 
 export interface featureMapBuilders {

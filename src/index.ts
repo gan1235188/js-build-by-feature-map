@@ -15,7 +15,6 @@ const clone = require('clone')
 const md5 = require('md5')
 let featureConfig: featureTransformType = {}
 const featureMapBuilders: featureMapBuilders = {}
-let buildPromise: Promise<featureMapBuilder>
 export async function build(
   featureMap: featureMap= {},
   specialWebpackConfig: any = {},
@@ -23,11 +22,11 @@ export async function build(
 {
   const builderStatus = getBuilderStatus(featureMap, builderConfig, specialWebpackConfig)
 
-  if(builderStatus.isBuilding && buildPromise) {
-    return buildPromise
+  if(builderStatus.isBuilding && builderStatus.buildPromise) {
+    return builderStatus.buildPromise
   }
 
-  buildPromise = new Promise<featureMapBuilder>(async (resolve, reject) => {
+  builderStatus.buildPromise = new Promise<featureMapBuilder>(async (resolve, reject) => {
     const pluginConfig = createSpecialPluginConfigByFeatureMap(featureMap, featureConfig)
     const _webpackConfig = getWebpackConfig(specialWebpackConfig, builderStatus)
     const webpackConfig = setWebpackConfigTransformPlugin(pluginConfig, _webpackConfig)
@@ -36,7 +35,7 @@ export async function build(
     runWebpack(webpackConfig, resolve, reject, builderStatus)
   })
 
-  return buildPromise
+  return builderStatus.buildPromise
 }
 
 export function setTransformPlugin(_specialTransformConfig: featureTransformType) {

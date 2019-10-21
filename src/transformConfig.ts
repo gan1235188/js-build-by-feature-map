@@ -31,7 +31,7 @@ export default {
      */
     unicodePropertyRegex: '@babel/plugin-proposal-unicode-property-regex',
     // 单独转化async和await，如果有yied和*，则不转化
-    // asyncToGenerator: '@babel/plugin-transform-async-to-generator',
+    asyncToGenerator: '@babel/plugin-transform-async-to-generator',
     // 转化箭头函数：()=>{} === function(){}
     arrowFunctions: '@babel/plugin-transform-arrow-functions',
     // 转化块级空间函数定义
@@ -49,7 +49,7 @@ export default {
     //匹配转化正则表达式的dotAll模式：s修饰符，"."可以匹配任何单字符
     dotallRegex: '@babel/plugin-transform-dotall-regex',
     //对象重复属性(get属性与非get属性重名)
-    // '@babel/plugin-transform-duplicate-keys',
+    duplicateKeys: '@babel/plugin-transform-duplicate-keys',
     //转化求幂操作符：x ** 2 === Math.pow(x, 2)
     exponentiationOperator: '@babel/plugin-transform-exponentiation-operator',
     //转化for of循环： for(var i of obj){}

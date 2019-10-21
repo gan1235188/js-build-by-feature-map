@@ -128,21 +128,20 @@ const clone = __webpack_require__(/*! clone */ "clone");
 const md5 = __webpack_require__(/*! md5 */ "md5");
 let featureConfig = {};
 const featureMapBuilders = {};
-let buildPromise;
 function build(featureMap = {}, specialWebpackConfig = {}, builderConfig = getDefaultBuilderConfig()) {
     return __awaiter(this, void 0, void 0, function* () {
         const builderStatus = getBuilderStatus(featureMap, builderConfig, specialWebpackConfig);
-        if (builderStatus.isBuilding && buildPromise) {
-            return buildPromise;
+        if (builderStatus.isBuilding && builderStatus.buildPromise) {
+            return builderStatus.buildPromise;
         }
-        buildPromise = new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+        builderStatus.buildPromise = new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             const pluginConfig = createSpecialPluginConfigByFeatureMap(featureMap, featureConfig);
             const _webpackConfig = getWebpackConfig(specialWebpackConfig, builderStatus);
             const webpackConfig = setWebpackConfigTransformPlugin(pluginConfig, _webpackConfig);
             builderStatus.isBuilding = builderStatus.isWatchMode;
             runWebpack(webpackConfig, resolve, reject, builderStatus);
         }));
-        return buildPromise;
+        return builderStatus.buildPromise;
     });
 }
 function setTransformPlugin(_specialTransformConfig) {
@@ -369,7 +368,7 @@ __webpack_require__.r(__webpack_exports__);
      */
     unicodePropertyRegex: '@babel/plugin-proposal-unicode-property-regex',
     // 单独转化async和await，如果有yied和*，则不转化
-    // asyncToGenerator: '@babel/plugin-transform-async-to-generator',
+    asyncToGenerator: '@babel/plugin-transform-async-to-generator',
     // 转化箭头函数：()=>{} === function(){}
     arrowFunctions: '@babel/plugin-transform-arrow-functions',
     // 转化块级空间函数定义
@@ -387,7 +386,7 @@ __webpack_require__.r(__webpack_exports__);
     //匹配转化正则表达式的dotAll模式：s修饰符，"."可以匹配任何单字符
     dotallRegex: '@babel/plugin-transform-dotall-regex',
     //对象重复属性(get属性与非get属性重名)
-    // '@babel/plugin-transform-duplicate-keys',
+    duplicateKeys: '@babel/plugin-transform-duplicate-keys',
     //转化求幂操作符：x ** 2 === Math.pow(x, 2)
     exponentiationOperator: '@babel/plugin-transform-exponentiation-operator',
     //转化for of循环： for(var i of obj){}
