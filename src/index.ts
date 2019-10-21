@@ -1,5 +1,6 @@
 import * as webpack from 'webpack'
 import transformConfig from './transformConfig'
+import * as path from 'path'
 import { 
   featureMap,
   featureTransformType,
@@ -7,32 +8,35 @@ import {
   featureMapBuilder,
   builderConfig
 } from './types'
-import * as path from 'path'
 
 export * from './types'
 
+const clone = require('clone')
 const md5 = require('md5')
 let featureConfig: featureTransformType = {}
 const featureMapBuilders: featureMapBuilders = {}
-
+let buildPromise: Promise<featureMapBuilder>
 export async function build(
   featureMap: featureMap= {},
   specialWebpackConfig: any = {},
-  builderConfig: builderConfig = getDefaultBuilderConfig())
+  builderConfig: builderConfig = getDefaultBuilderConfig()): Promise<featureMapBuilder>
 {
   const builderStatus = getBuilderStatus(featureMap, builderConfig, specialWebpackConfig)
-  const pluginConfig = createSpecialPluginConfigByFeatureMap(featureMap, featureConfig)
-  const _webpackConfig = getWebpackConfig(specialWebpackConfig, builderStatus)
-  const webpackConfig = setWebpackConfigTransformPlugin(pluginConfig, _webpackConfig)
 
-  return new Promise((resolve, reject) => {
-    if(builderStatus.isBuilding) {
-      return resolve(builderStatus)
-    }
+  if(builderStatus.isBuilding && buildPromise) {
+    return buildPromise
+  }
+
+  buildPromise = new Promise<featureMapBuilder>(async (resolve, reject) => {
+    const pluginConfig = createSpecialPluginConfigByFeatureMap(featureMap, featureConfig)
+    const _webpackConfig = getWebpackConfig(specialWebpackConfig, builderStatus)
+    const webpackConfig = setWebpackConfigTransformPlugin(pluginConfig, _webpackConfig)
 
     builderStatus.isBuilding = builderStatus.isWatchMode
     runWebpack(webpackConfig, resolve, reject, builderStatus)
   })
+
+  return buildPromise
 }
 
 export function setTransformPlugin(_specialTransformConfig: featureTransformType) {
@@ -133,7 +137,10 @@ function createSpecialPluginConfigByFeatureMap(
   specialTransformConfig: featureTransformType)
 {
   const result: featureTransformType = {}
-  const _transformConfig = deepMerge<featureTransformType>(transformConfig, specialTransformConfig)
+  const _transformConfig = clone({
+    ...transformConfig,
+    ...specialTransformConfig
+  })
 
   Object.keys(_transformConfig).forEach(key => {
     const map = (featureMap || {}) as any
@@ -143,23 +150,6 @@ function createSpecialPluginConfigByFeatureMap(
   })
 
   return result
-}
-
-function deepMerge<T>(...objs: T[]): T {
-  let result = {} as T
-  try {
-
-    objs.map(item => {
-      result = {
-        ...result,
-        ...JSON.parse(JSON.stringify(item))
-      }
-    })
-
-    return result
-  }catch(e) {
-    console.error(e)
-  }
 }
 
 function setWebpackConfigTransformPlugin (
@@ -274,10 +264,10 @@ function getWebpackConfig(
     }
   }
 
-  const webpackConfig = {
+  const webpackConfig = clone({
     ...defaultConfig,
     ...specialWebpackConfig
-  }
+  })
 
   setWebpackOutput(webpackConfig, builderStatus)
 

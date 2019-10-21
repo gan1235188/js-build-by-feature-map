@@ -124,22 +124,25 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+const clone = __webpack_require__(/*! clone */ "clone");
 const md5 = __webpack_require__(/*! md5 */ "md5");
 let featureConfig = {};
 const featureMapBuilders = {};
+let buildPromise;
 function build(featureMap = {}, specialWebpackConfig = {}, builderConfig = getDefaultBuilderConfig()) {
     return __awaiter(this, void 0, void 0, function* () {
         const builderStatus = getBuilderStatus(featureMap, builderConfig, specialWebpackConfig);
-        const pluginConfig = createSpecialPluginConfigByFeatureMap(featureMap, featureConfig);
-        const _webpackConfig = getWebpackConfig(specialWebpackConfig, builderStatus);
-        const webpackConfig = setWebpackConfigTransformPlugin(pluginConfig, _webpackConfig);
-        return new Promise((resolve, reject) => {
-            if (builderStatus.isBuilding) {
-                return resolve(builderStatus);
-            }
+        if (builderStatus.isBuilding && buildPromise) {
+            return buildPromise;
+        }
+        buildPromise = new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+            const pluginConfig = createSpecialPluginConfigByFeatureMap(featureMap, featureConfig);
+            const _webpackConfig = getWebpackConfig(specialWebpackConfig, builderStatus);
+            const webpackConfig = setWebpackConfigTransformPlugin(pluginConfig, _webpackConfig);
             builderStatus.isBuilding = builderStatus.isWatchMode;
             runWebpack(webpackConfig, resolve, reject, builderStatus);
-        });
+        }));
+        return buildPromise;
     });
 }
 function setTransformPlugin(_specialTransformConfig) {
@@ -208,7 +211,7 @@ function runWebpack(webpackConfig, resolve, reject, builderStatus) {
 }
 function createSpecialPluginConfigByFeatureMap(featureMap, specialTransformConfig) {
     const result = {};
-    const _transformConfig = deepMerge(_transformConfig__WEBPACK_IMPORTED_MODULE_1__["default"], specialTransformConfig);
+    const _transformConfig = clone(Object.assign(Object.assign({}, _transformConfig__WEBPACK_IMPORTED_MODULE_1__["default"]), specialTransformConfig));
     Object.keys(_transformConfig).forEach(key => {
         const map = (featureMap || {});
         if (!map[key]) {
@@ -216,18 +219,6 @@ function createSpecialPluginConfigByFeatureMap(featureMap, specialTransformConfi
         }
     });
     return result;
-}
-function deepMerge(...objs) {
-    let result = {};
-    try {
-        objs.map(item => {
-            result = Object.assign(Object.assign({}, result), JSON.parse(JSON.stringify(item)));
-        });
-        return result;
-    }
-    catch (e) {
-        console.error(e);
-    }
 }
 function setWebpackConfigTransformPlugin(specialTransformConfig, webpackConfig) {
     // TODO: 如果js的loader使用了除了babel以外的loader会导致问题
@@ -316,7 +307,7 @@ function getWebpackConfig(specialWebpackConfig = {}, builderStatus) {
             rules: []
         }
     };
-    const webpackConfig = Object.assign(Object.assign({}, defaultConfig), specialWebpackConfig);
+    const webpackConfig = clone(Object.assign(Object.assign({}, defaultConfig), specialWebpackConfig));
     setWebpackOutput(webpackConfig, builderStatus);
     return webpackConfig;
 }
@@ -557,6 +548,17 @@ __webpack_require__.r(__webpack_exports__);
     decorators: ['@babel/plugin-proposal-decorators', { decoratorsBeforeExport: true }]
 });
 
+
+/***/ }),
+
+/***/ "clone":
+/*!************************!*\
+  !*** external "clone" ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("clone");
 
 /***/ }),
 
